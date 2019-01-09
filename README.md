@@ -1,14 +1,9 @@
 # arduino-rfid-MFRC522
-Interfacing Arduino with 13.56MHz ISO14443 RFID tags using NXP MFRC522 modules
+Interfacing Arduino with 13.56MHz ISO14443 RFID tags using NXP MFRC522 reader modules
 ![MFRC522 module](https://raw.githubusercontent.com/playfultechnology/arduino-rfid-MFRC522/master/documentation/MFRC522.jpg)
 
 By default, these readers use the SPI interface, although the chip also supports UART and I2C. Datasheet can be found <a href="https://www.nxp.com/docs/en/data-sheet/MFRC522.pdf
 ">here</a>. For a comparison of alternative readers, see https://www.patreon.com/posts/rfid-roundup-23115452
-
-
-# Components
-- [PN5180 Module](https://www.aliexpress.com/item/PN5180-NFC-IC-ISO15693-RFID-SLIX-ISO-IEC-18092-14443-A-B-Read-Write-module/32840851498.html) ~£8
-- [Arduino](https://www.banggood.com/ATmega328P-Nano-V3-Controller-Board-Compatible-Arduino-p-940937.html) ~£3
 
 # Wiring
 There are 8 pins on the MFRC522 board, as follows:
