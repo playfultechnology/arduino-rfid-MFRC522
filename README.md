@@ -19,8 +19,11 @@ There are 8 pins on the MFRC522 board, as follows:
 Arduino UNO/Nano/Mega operates at 5V logic. However, the MFRC522 works at 3.3V logic level, and is not 5V tolerant. If using one of these microprocessors:
 - You **must** use a 5V <-> 3.3V level shifter on any lines that send HIGH output *from* the Arduino *to* the MFRC522. These are RST, NSS, MOSI, and SCK marked with an asterisk in the list above.
 - You **may** use a 3.3V <-> 5V level shifter on those lines that send HIGH output *from* the MFRC522 *to* the Arduino (MISO) though this is not generally necessary - a HIGH 3.3V signal will normally be recognised as a HIGH signal on a 5V system too.
-
+- *But*, while logic level shifters solve the problem of interfacing between devices at different voltages, they can introduce other problems... simple bi-directional convertors use transistors that can be slow to react, and this delay damages the timing and quality of the signal. This can be mitigated somewhat by explicitly slowing down the speed of the SPI interface in the Arduino code, by including #define MFRC522_SPICLOCK (400000u)	(Sets SPI bus to 400kHz) prior to including the RFID library.
 - MOSI, MISO, and SCK lines are shared between all readers, and use Arduino SPI pins 11(MOSI), 12(MISO), and 13(SCK). 
 - NSS lines must be assigned to unique GPIO pins for each reader.
 
 ![MFRC522 to Arduino using SPI](https://raw.githubusercontent.com/playfultechnology/arduino-rfid-MFRC522/master/documentation/MFRC522_bb.jpg)
+
+# Troubleshooting
+- Some cheap boards are known to not properly release the MISO line when deselected. For those boards, it is recommended to either place a buffer or multiplexer to expicitly disconnect that line from noise of unselected chips.
