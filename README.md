@@ -100,7 +100,7 @@ https://electronics.stackexchange.com/questions/594740/spi-noise-after-extending
 
 SPI ultimately not built for noise immunity! Best to place a separate MCU on each board and connecting them via CANbus
 https://electronics.stackexchange.com/questions/33125/short-distance-board-to-board-communication
-
+https://www.reddit.com/r/arduino/comments/xnumjp/connecting_20_rfid_readers_to_arduino_uno_and/
 
 SOLUTIONS
 ---
@@ -112,7 +112,8 @@ Place a _series_ resistor in the SPI lines near the driver to reduce ringing and
 Try a value of about 50ohm.
 https://electronics.stackexchange.com/questions/594740/spi-noise-after-extending-wires-why
 
-Or, place a terminating 
+Or, place a terminating resistor at the load end, to ground.
+
 
 
 https://electronics.stackexchange.com/questions/33372/spi-bus-termination-considerations
