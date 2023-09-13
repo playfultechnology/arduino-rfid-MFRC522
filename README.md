@@ -95,12 +95,28 @@ This comment on a YouTube video suggests that the problem with the MISO line is 
 https://www.youtube.com/watch?v=ahc8Yai_sWI&lc=Ugx-FXXT6SMyXuiPKel4AaABAg
 Some people all over the internet face issues when connecting multiple RFID boards in parallel to Arduino board. When 2+ readers connected it stop working. One reader works perfectly but 2+ pcs.  not. The problem is weak MISO output of some reader board. Checked some Russian electronics forums and found answer how to make multiple readers work. You need to connect MISO outputs through the OR logic gate to Arduino. It is possible to use logic OR IC chip or just simple diodes+resistor OR element. Connect anodes of diodes to MISO reader outputs. Then tie all cathodes together, put 4k7 resistor to the ground (yeah we just built OR logic gate) and then connect to the MISO pin 12 (on Arduono Uno). That's it! Tested with 3 readers. Work like ice ;)
 
+Long wire runs in SPI buses introduce issues of resistance, capacitance, and inductance...
+https://electronics.stackexchange.com/questions/594740/spi-noise-after-extending-wires-why
+
+SPI ultimately not built for noise immunity! Best to place a separate MCU on each board and connecting them via CANbus
+https://electronics.stackexchange.com/questions/33125/short-distance-board-to-board-communication
+
 
 SOLUTIONS
 ---
 People have tried to hold the RESET line low to disable devices instead of using the SS line.
 https://github.com/miguelbalboa/rfid/issues/290
 This works, but behaviour is not correct - according to the datasheet, when RST is low the output on the MISO line can be held HIGH or LOW - we want it to be Z.
+
+Place a _series_ resistor in the SPI lines near the driver to reduce ringing and reflections. This should have the same resistance as the impedance of the trace/wire
+Try a value of about 50ohm.
+https://electronics.stackexchange.com/questions/594740/spi-noise-after-extending-wires-why
+
+Or, place a terminating 
+
+
+https://electronics.stackexchange.com/questions/33372/spi-bus-termination-considerations
+
 
 Can implement a buffer on the 
 
