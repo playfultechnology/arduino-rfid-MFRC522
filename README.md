@@ -1,5 +1,6 @@
 # arduino-rfid-MFRC522
 Interfacing Arduino with 13.56MHz ISO14443 RFID tags using NXP MFRC522 reader modules
+
 ![MFRC522 module](https://raw.githubusercontent.com/playfultechnology/arduino-rfid-MFRC522/master/documentation/MFRC522.jpg)
 
 By default, these readers use the SPI interface, although the chip also supports UART and I2C. Datasheet can be found <a href="https://www.nxp.com/docs/en/data-sheet/MFRC522.pdf
@@ -30,45 +31,35 @@ Arduino UNO/Nano/Mega operates at 5V logic. However, the MFRC522 works at 3.3V l
 
 Mistakes people make:
 
-a.) Not using correct logic voltage.
+a.) **Not using correct logic voltage**
 Some sites claim "the good news is that the logic pins are 5-volt tolerant"  (e.g. https://lastminuteengineers.com/how-rfid-works-rc522-arduino-tutorial/) 
-There is absolutely nothing in the datasheet to suggest this is the case.
-read the limiting values in Table 150 in the official MFRC522 spec at https://www.nxp.com/docs/en/data-sheet/MFRC522.pdf#G1001030350 4, I see:
-VI, Input Voltage on all pins V: VSS - 0.5 < VI < VDD + 0.5.
-Given VSS/VDD(max) = 4.0V, if you’re supply 5.0V on any pins, you’re outside the maximum…
-https://forum.arduino.cc/t/5v-pro-mini-and-rc-522-rfid/388666/19
+There is absolutely nothing in the datasheet to suggest this is the case. The limiting values are shown in Table 150 of the MFRC522 spec at https://www.nxp.com/docs/en/data-sheet/MFRC522.pdf#G1001030350 4::
+```VI, Input Voltage on all pins V: VSS - 0.5 < VI < VDD + 0.5```
+Given VSS/VDD(max) = 4.0V, if you supply 5.0V on any MOSI/MISO/CLK or RST SPI pins, you’re outside the maximum… See https://forum.arduino.cc/t/5v-pro-mini-and-rc-522-rfid/388666/19
 
-b.) Using a logic level convertor
-So, if the MFRC522 is not 5V tolerant, and you want to use a 5V Arduino, you simply need to add one of those bi-directional
+b.) **Using a (poor) logic level convertor**
+If the MFRC522 is not 5V tolerant and you want to use a 5V Arduino, you simply need to add one of those bi-directional
 logic level convertors (like this: https://www.sparkfun.com/products/12009), right?
 Wrong!
-The irony is that while these convertors fix the problem of voltage, they introduce new problems with timing - the rising and falling edge are often missed. 
-https://forum.arduino.cc/t/rc522-not-working/892388/8
-
-Clock and data are 5V signals going into a 3V3 device so you should convert them with a 510R and 1K resistor.
- "Bidirectional logic convertors" are often too slow for SPI communication. So, the irony is that you introduce
- them to fix problems with the data lines being the wrong voltage, but then introduce new problems with timing.
-Can also reduce SPI speed to help somewhat
+The irony is that while these convertors fix the problem of voltage, they introduce *new* problems with timing - the rising and falling edge are often missed. See https://forum.arduino.cc/t/rc522-not-working/892388/8
+CLK and MOSI lines carry 5V signals going into a 3V3 device so you should convert them with a 510R and 1K resistor.
+"Bidirectional logic convertors" are often too slow for SPI communication. So, the irony is that you introduce
+them to fix problems with the data lines being the wrong voltage, but then introduce new problems with timing.
+It can also help to explicitly reduce the speed of the SPI bus declared in the <a href"https://www.arduino.cc/reference/en/language/functions/communication/spi/spisettings/">SPISettings<a>.
 
 The solution to both a.) and b.) is trivially to use a 3.3V microprocessor rather than a 5V Arduino. e.g. An ESP8266 or ESP32
 
-c.) Not using enough power
-The 3.3V output from the Arduino is not very powerful. It is good for up to 150ma. Really need a separate, beefy 3.3V supply
-An RFID module uses 23 - 26mA
-
-From the datasheet:
+c.) **Not supplying enough power**
+The 3.3V output from the Arduino is not capable of supplying much power - it is only good for up to ~150mA. If powering several RFID readers you must use a separate appropriately rated 3.3V supply (budget for ~100mA per reader). From the datasheet:
 "During operation with typical circuitry, the overall current is below 100mA"
 
+Problems resulting from using multiple readers on the same SPI bus:
 
+d.) **Increased capacitance due to all the extra wiring**
+SPI interface is designed to run between components on a PCB, not for long wire runs between devices. Keep cables as short as possible, preferably 20cm or less.
 
-Problems with using multiple readers on the same SPI bus
-
-d.) Increased capacitance due to all the extra wiring
-
-e.) Do not respect SS signals, do not tri-state MISO line when not selected.
-
-
-
+e.) **Some clone readers do not respect SS signals and/or do not tri-state MISO line when not selected**
+Discussed in investigations below.
 
 If you're going to connect a lot of readers, you will probably end up using a multiplexer to select the appropriate reader.
 If that's the case, you may as well also use the same control lines to also switch the SCK, MISO, and MOSI lines. 
@@ -112,11 +103,7 @@ Place a _series_ resistor in the SPI lines near the driver to reduce ringing and
 Try a value of about 50ohm.
 https://electronics.stackexchange.com/questions/594740/spi-noise-after-extending-wires-why
 
-Or, place a terminating resistor at the load end, to ground.
-
-
-
-https://electronics.stackexchange.com/questions/33372/spi-bus-termination-considerations
+Or, place a terminating resistor at the load end, to ground. https://electronics.stackexchange.com/questions/33372/spi-bus-termination-considerations
 
 
 Can implement a buffer on the 
