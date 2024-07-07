@@ -108,3 +108,16 @@ Or, place a terminating resistor at the load end, to ground. https://electronics
 
 Can implement a buffer on the 
 
+# Interrupts
+ - Looking at the RPI library at https://github.com/ondryaso/pi-rc522/blob/master/pirc522/rfid.py#L483
+// Shows tag detected by IRQ change rather than by polling
+
+ - This is confirmed to work by comment thread on a RPi Jukebox player site, where the MFRC522 is only supported if the IRQ pin is connected: https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1227#issuecomment-881250852
+
+ - And there is a Miguel Balboa's "minimal interrupt example", which seems to write similar values to the IRQ register:
+https://github.com/miguelbalboa/rfid/blob/master/examples/MinimalInterrupt/MinimalInterrupt.ino
+
+But, at https://github.com/miguelbalboa/rfid/tree/master
+// "Doesn't work: Use of IRQ pin. But there is a proof-of-concept example."
+
+
